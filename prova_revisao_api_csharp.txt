@@ -1,0 +1,114 @@
+📘 Prova de Revisão – API em C# (.NET)
+
+=============================
+Parte 1 – Questões Teóricas
+=============================
+
+1) Qual anotação indica que uma classe é um controlador de API no ASP.NET Core?
+a) [Controller]
+b) [ApiController]
+c) [HttpController]
+d) [WebApi]
+
+2) Qual método HTTP é utilizado para atualizar parcialmente um recurso?
+a) GET
+b) PUT
+c) PATCH
+d) DELETE
+
+3) O que significa o status code 201?
+a) Recurso atualizado com sucesso
+b) Requisição inválida
+c) Recurso criado com sucesso
+d) Nenhum conteúdo retornado
+
+4) Em uma API bem estruturada, qual camada é responsável pela lógica de negócio?
+a) Controller
+b) Service
+c) Repository
+d) Models
+
+5) Quando um recurso solicitado não é encontrado, qual deve ser o status code retornado?
+a) 200
+b) 201
+c) 400
+d) 404
+
+
+=============================
+Parte 2 – Questões Práticas
+=============================
+
+6) Escreva um método em um Controller que retorne uma lista de produtos usando [HttpGet].
+
+7) Escreva um método em um Controller que adicione um novo produto usando [HttpPost].
+
+8) Dado o seguinte Model:
+public class Produto
+{
+    public int Id { get; set; }
+    public string Nome { get; set; }
+}
+Crie um método PUT que atualize o nome de um produto pelo id.
+
+9) Explique a diferença entre PUT e PATCH em uma API REST.
+
+10) Suponha que um erro inesperado ocorra dentro de um método do Controller. 
+Mostre como capturar a exceção e retornar um 500 Internal Server Error.
+
+
+=============================
+Gabarito
+=============================
+
+1) b) [ApiController]
+2) c) PATCH
+3) c) Recurso criado com sucesso
+4) b) Service
+5) d) 404
+
+6) Exemplo:
+[HttpGet]
+public IActionResult Get()
+{
+    var produtos = new List<string> { "TV", "Notebook", "Celular" };
+    return Ok(produtos);
+}
+
+7) Exemplo:
+[HttpPost]
+public IActionResult Post([FromBody] string produto)
+{
+    produtos.Add(produto);
+    return Created("", produto);
+}
+
+8) Exemplo:
+[HttpPut("{id}")]
+public IActionResult Put(int id, [FromBody] Produto novoProduto)
+{
+    var produto = produtos.FirstOrDefault(p => p.Id == id);
+    if (produto == null) return NotFound();
+
+    produto.Nome = novoProduto.Nome;
+    return NoContent();
+}
+
+9) PUT → Atualiza o recurso inteiro (substitui os dados).
+   PATCH → Atualiza apenas campos específicos do recurso.
+
+10) Exemplo:
+[HttpGet("{id}")]
+public IActionResult GetById(int id)
+{
+    try
+    {
+        var produto = produtos.FirstOrDefault(p => p.Id == id);
+        if (produto == null) return NotFound();
+        return Ok(produto);
+    }
+    catch(Exception ex)
+    {
+        return StatusCode(500, "Erro interno: " + ex.Message);
+    }
+}
