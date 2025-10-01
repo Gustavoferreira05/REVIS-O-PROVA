@@ -1,0 +1,97 @@
+📌 Revisão API em C# (.NET)
+
+1. O que é uma API?
+- Interface que permite comunicação entre sistemas.
+- No caso do .NET Web API, usamos o ASP.NET Core para expor endpoints via HTTP.
+
+2. Métodos HTTP e suas funções
+- GET → Buscar dados.
+- POST → Criar novo recurso.
+- PUT → Atualizar recurso por completo.
+- PATCH → Atualizar apenas parte do recurso.
+- DELETE → Excluir recurso.
+
+3. Estrutura básica de uma API em C#
+[ApiController]
+[Route("api/[controller]")]
+public class ProdutosController : ControllerBase
+{
+    private static List<string> produtos = new List<string>() { "TV", "Notebook", "Celular" };
+
+    [HttpGet]
+    public IActionResult Get() => Ok(produtos);
+
+    [HttpGet("{id}")]
+    public IActionResult GetById(int id)
+    {
+        if (id < 0 || id >= produtos.Count) return NotFound("Produto não encontrado");
+        return Ok(produtos[id]);
+    }
+
+    [HttpPost]
+    public IActionResult Post([FromBody] string produto)
+    {
+        produtos.Add(produto);
+        return Created("", produto);
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Put(int id, [FromBody] string novoProduto)
+    {
+        if (id < 0 || id >= produtos.Count) return NotFound();
+        produtos[id] = novoProduto;
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        if (id < 0 || id >= produtos.Count) return NotFound();
+        produtos.RemoveAt(id);
+        return NoContent();
+    }
+}
+
+4. Principais Anotações
+- [ApiController] → Marca a classe como um controlador de API.
+- [Route("api/[controller]")] → Define rota padrão (nome do controller).
+- [HttpGet], [HttpPost], [HttpPut], [HttpDelete] → Mapeiam os métodos HTTP.
+
+5. Status Codes mais usados
+- 200 OK → Requisição bem-sucedida.
+- 201 Created → Recurso criado com sucesso.
+- 204 No Content → Requisição bem-sucedida sem retorno.
+- 400 Bad Request → Erro de validação.
+- 404 Not Found → Recurso não encontrado.
+- 500 Internal Server Error → Erro no servidor.
+
+6. Camadas de uma API
+- Controller → Recebe requisições e envia respostas.
+- Service → Contém a lógica de negócio.
+- Repository → Acesso ao banco de dados.
+- Models → Estrutura dos dados (classes).
+
+7. Exemplo de Model
+public class Produto
+{
+    public int Id { get; set; }
+    public string Nome { get; set; }
+    public decimal Preco { get; set; }
+}
+
+8. Tratamento de Exceções
+try
+{
+    // código que pode falhar
+}
+catch(Exception ex)
+{
+    return StatusCode(500, "Erro interno: " + ex.Message);
+}
+
+9. Boa prática: DTOs
+public class ProdutoDTO
+{
+    public string Nome { get; set; }
+    public decimal Preco { get; set; }
+}
